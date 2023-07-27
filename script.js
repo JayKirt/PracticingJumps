@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
             requestAnimationFrame(updateJumpPosition);
           } else {
             ballVY = 0;
-            ball.style.bottom = "0px"; // Set the ball back to the bottom after the jump
+            ball.style.bottom = initialY + "px";
             isJumping = false;
           }
         }
@@ -76,7 +76,25 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     
       function handleCollisions() {
-        // ... (unchanged)
+        const ballRect = ball.getBoundingClientRect();
+        const platforms = document.getElementsByClassName("platform");
+    
+        for (let i = 0; i < platforms.length; i++) {
+          const platform = platforms[i];
+          const platformRect = platform.getBoundingClientRect();
+    
+          if (
+            ballRect.left < platformRect.right &&
+            ballRect.right > platformRect.left &&
+            ballRect.bottom >= platformRect.top &&
+            ballRect.bottom <= platformRect.bottom &&
+            ballVY < 0 // Only trigger collision when ball is moving upwards (jumping)
+          ) {
+            ballVY = 0;
+            ballY = platformRect.top - ball.offsetHeight;
+            isJumping = false;
+          }
+        }
       }
     
       function updateBallPosition() {
