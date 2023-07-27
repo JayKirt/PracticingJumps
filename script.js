@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const gravity = 0.5;
   
     let isJumping = false;
+    let isOnPlatform = false; // Track if the ball is on a platform
     let ballX = gameContainer.clientWidth / 2;
     let ballY = gameContainer.clientHeight - ball.offsetHeight; // Set the ball at the bottom
     let ballVY = 0;
@@ -48,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   
     function jump() {
-      if (isJumping) return;
+      if (isJumping || !isOnPlatform) return;
       isJumping = true;
       const initialY = ballY;
       let currentY = initialY;
@@ -89,7 +90,10 @@ document.addEventListener("DOMContentLoaded", function () {
           ballVY = 0;
           ballY = platformRect.top - ball.offsetHeight;
           isJumping = false;
+          isOnPlatform = true; // Ball is on a platform
           break;
+        } else {
+          isOnPlatform = false; // Ball is not on any platform
         }
       }
     }
