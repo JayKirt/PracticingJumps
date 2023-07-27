@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ballX = gameContainer.clientWidth - ball.offsetWidth;
       }
   
-      // Prevent the ball from going below the bottom of the screen
+      // Keep the ball at the bottom of the screen
       if (ballY > gameContainer.clientHeight - ball.offsetHeight) {
         ballY = gameContainer.clientHeight - ball.offsetHeight;
         ballVY = 0;
@@ -141,6 +141,8 @@ document.addEventListener("DOMContentLoaded", function () {
   
     gameContainer.addEventListener("click", jump);
   
+    ball.style.left = ballX + "px"; // Set the ball's initial position at the bottom
+    ball.style.bottom = ballY + "px";
     updateBallPosition(ballX);
     gameLoop();
   });

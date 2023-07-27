@@ -5,21 +5,20 @@ body {
   }
   
   #game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 100vh;
-    background-color: #f0f0f0;
-    position: relative;
+    height: 100%;
+    background-color: lightblue;
   }
   
   #ball {
+    position: absolute;
     width: 30px;
     height: 30px;
-    background-color: #ff0000;
+    background-color: red;
     border-radius: 50%;
-    position: absolute;
-    bottom: 0; /* Set the ball at the bottom */
-    left: 50%;
-    transform: translateX(-50%);
   }
   
   .platform {
