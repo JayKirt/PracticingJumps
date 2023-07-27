@@ -2,9 +2,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const gameContainer = document.getElementById("game-container");
     const ball = document.getElementById("ball");
   
+    const platformWidth = 100;
+    const platformHeight = 15;
     const jumpHeight = 100;
     const jumpDuration = 800;
-    const platformInterval = 2000;
     const ballSpeed = 5;
     const gravity = 0.5;
   
@@ -12,14 +13,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let ballX = gameContainer.clientWidth / 2;
     let ballY = gameContainer.clientHeight - ball.offsetHeight;
     let ballVY = 0;
-    const platforms = [];
+    let mouseX = ballX;
   
     function createPlatform() {
       const platform = document.createElement("div");
       platform.className = "platform";
   
-      const platformWidth = 100;
-      const platformHeight = 15;
       const maxX = gameContainer.clientWidth - platformWidth;
       const randomX = Math.floor(Math.random() * maxX);
       platform.style.width = platformWidth + "px";
@@ -28,22 +27,24 @@ document.addEventListener("DOMContentLoaded", function () {
       platform.style.top = gameContainer.clientHeight + "px";
   
       gameContainer.appendChild(platform);
-      platforms.push(platform);
+      movePlatform(platform);
     }
   
-    function movePlatforms() {
-      platforms.forEach((platform) => {
-        let posY = parseInt(platform.style.top);
+    function movePlatform(platform) {
+      let posY = gameContainer.clientHeight;
+  
+      function updatePosition() {
         posY -= 5;
         platform.style.top = posY + "px";
-        if (posY < -platform.offsetHeight) {
+  
+        if (posY > -platformHeight) {
+          requestAnimationFrame(updatePosition);
+        } else {
           platform.remove();
-          const index = platforms.indexOf(platform);
-          if (index > -1) {
-            platforms.splice(index, 1);
-          }
         }
-      });
+      }
+  
+      requestAnimationFrame(updatePosition);
     }
   
     function jump() {
@@ -73,7 +74,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleCollisions() {
       const ballRect = ball.getBoundingClientRect();
   
-      platforms.forEach((platform) => {
+      const platforms = document.getElementsByClassName("platform");
+      for (let i = 0; i < platforms.length; i++) {
+        const platform = platforms[i];
         const platformRect = platform.getBoundingClientRect();
   
         if (
@@ -86,8 +89,9 @@ document.addEventListener("DOMContentLoaded", function () {
           ballVY = 0;
           ballY = platformRect.top - ball.offsetHeight;
           isJumping = false;
+          break;
         }
-      });
+      }
     }
   
     function updateBallPosition(mouseX) {
@@ -117,8 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
     function gameLoop() {
       createPlatform();
-      movePlatforms();
-      setTimeout(gameLoop, platformInterval);
+      setTimeout(gameLoop, 2000);
     }
   
     gameContainer.addEventListener("mousemove", function (event) {
