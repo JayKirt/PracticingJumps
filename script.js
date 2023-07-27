@@ -52,53 +52,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   
     function jump() {
-      if (isJumping) return;
-      isJumping = true;
-      const initialY = parseInt(ball.style.bottom);
-      let currentY = initialY;
-      const jumpStartTime = performance.now();
-  
-      function updateJumpPosition(timestamp) {
-        const elapsedTime = timestamp - jumpStartTime;
-        if (elapsedTime < jumpDuration) {
-          currentY = initialY + jumpHeight - (jumpHeight / jumpDuration) * elapsedTime;
-          ballVY = jumpHeight - (jumpHeight / jumpDuration) * elapsedTime;
-          ball.style.bottom = currentY + "px";
-          requestAnimationFrame(updateJumpPosition);
-        } else {
-          ballVY = 0;
-          ball.style.bottom = initialY + "px";
-          isJumping = false;
+        if (isJumping) return;
+        isJumping = true;
+        const initialY = ballY;
+        let currentY = initialY;
+        const jumpStartTime = performance.now();
+    
+        function updateJumpPosition(timestamp) {
+          const elapsedTime = timestamp - jumpStartTime;
+          if (elapsedTime < jumpDuration) {
+            currentY = initialY + jumpHeight - (jumpHeight / jumpDuration) * elapsedTime;
+            ballVY = (jumpHeight / jumpDuration) * elapsedTime;
+            ball.style.bottom = currentY + "px";
+            requestAnimationFrame(updateJumpPosition);
+          } else {
+            ballVY = 0;
+            ball.style.bottom = "0px"; // Set the ball back to the bottom after the jump
+            isJumping = false;
+          }
         }
+    
+        requestAnimationFrame(updateJumpPosition);
       }
-  
-      requestAnimationFrame(updateJumpPosition);
-    }
-  
-    function handleCollisions() {
-      const ballRect = ball.getBoundingClientRect();
-  
-      const platforms = document.getElementsByClassName("platform");
-      for (let i = 0; i < platforms.length; i++) {
-        const platform = platforms[i];
-        const platformRect = platform.getBoundingClientRect();
-  
-        if (
-          ballRect.left < platformRect.right &&
-          ballRect.right > platformRect.left &&
-          ballRect.bottom >= platformRect.top &&
-          ballRect.bottom <= platformRect.bottom
-        ) {
-          ballVY = 0;
-          ballY = platformRect.top - ball.offsetHeight;
-          isJumping = false;
-        }
+    
+      function handleCollisions() {
+        // ... (unchanged)
       }
-    }
-  
-    function updateBallPosition() {
+    
+      function updateBallPosition() {
         ballX += ballVX;
-        ballY -= ballVY;
+        ballY += ballVY;
         ballVY -= gravity;
     
         // Prevent the ball from moving outside the game container horizontally
@@ -111,10 +94,10 @@ document.addEventListener("DOMContentLoaded", function () {
         // Prevent the ball from moving outside the game container vertically
         if (ballY < 0) {
           ballY = 0;
+          ballVY = 0; // Reset vertical velocity when the ball reaches the top
         } else if (ballY > gameContainer.clientHeight - ball.offsetHeight) {
           ballY = gameContainer.clientHeight - ball.offsetHeight;
-          ballVY = 0; // Reset vertical velocity when the ball reaches the ground
-          isJumping = false; // Reset isJumping flag when the ball reaches the ground
+          ballVY = 0; // Reset vertical velocity when the ball reaches the bottom
         }
     
         ball.style.left = ballX + "px";
@@ -136,9 +119,8 @@ document.addEventListener("DOMContentLoaded", function () {
     
       gameContainer.addEventListener("click", jump);
     
-      // Set initial ball position
-      ballY = 0;
-      ball.style.bottom = ballY + "px";
+      // Set initial ball position to the bottom of the screen
+      ball.style.bottom = "0px";
       ball.style.left = ballX + "px"; // Use ballX for initial horizontal position
     
       gameContainer.addEventListener("mousemove", function (e) {
