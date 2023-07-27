@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Ball position variables for mouse jump
     let ballY = 0;
     let ballVY = 0;
+    const gravity = 0.5;
   
     function createPlatform() {
       const platform = document.createElement("div");
@@ -61,15 +62,62 @@ document.addEventListener("DOMContentLoaded", function () {
         const elapsedTime = timestamp - jumpStartTime;
         if (elapsedTime < jumpDuration) {
           currentY = initialY + jumpHeight - (jumpHeight / jumpDuration) * elapsedTime;
+          ballVY = jumpHeight - (jumpHeight / jumpDuration) * elapsedTime;
           ball.style.bottom = currentY + "px";
           requestAnimationFrame(updateJumpPosition);
         } else {
+          ballVY = 0;
           ball.style.bottom = initialY + "px";
           isJumping = false;
         }
       }
   
       requestAnimationFrame(updateJumpPosition);
+    }
+  
+    function handleCollisions() {
+      const ballRect = ball.getBoundingClientRect();
+  
+      const platforms = document.getElementsByClassName("platform");
+      for (let i = 0; i < platforms.length; i++) {
+        const platform = platforms[i];
+        const platformRect = platform.getBoundingClientRect();
+  
+        if (
+          ballRect.left < platformRect.right &&
+          ballRect.right > platformRect.left &&
+          ballRect.bottom >= platformRect.top &&
+          ballRect.bottom <= platformRect.bottom
+        ) {
+          ballVY = 0;
+          ballY = platformRect.top - ball.offsetHeight;
+          isJumping = false;
+        }
+      }
+    }
+  
+    function updateBallPosition() {
+      ballX += ballVX;
+      ballY -= ballVY;
+      ballVY -= gravity;
+  
+      if (ballX < 0) {
+        ballX = 0;
+      } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
+        ballX = gameContainer.clientWidth - ball.offsetWidth;
+      }
+  
+      if (ballY < 0) {
+        ballY = 0;
+        ballVY = 0;
+      }
+  
+      ball.style.left = ballX + "px";
+      ball.style.bottom = ballY + "px";
+  
+      handleCollisions();
+  
+      requestAnimationFrame(updateBallPosition);
     }
   
     function getRandomColor() {
@@ -90,7 +138,6 @@ document.addEventListener("DOMContentLoaded", function () {
     gameContainer.addEventListener("mousemove", function (e) {
       const rect = gameContainer.getBoundingClientRect();
       ballX = e.clientX - rect.left - ball.offsetWidth / 2;
-      ball.style.left = ballX + "px";
     });
   
     // Event listener for left/right arrow keys
@@ -111,18 +158,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   
-    function updateBallPosition() {
-      ballX += ballVX;
-      if (ballX < 0) {
-        ballX = 0;
-      } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
-        ballX = gameContainer.clientWidth - ball.offsetWidth;
-      }
-      ball.style.left = ballX + "px";
-      requestAnimationFrame(updateBallPosition);
-    }
-  
     updateBallPosition();
     gameLoop();
   });
-  
