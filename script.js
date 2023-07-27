@@ -98,53 +98,52 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   
-   function updateBallPosition(mouseX) {
-    ballX = mouseX; // Update the ball's X position to follow the mouse
-
-    ballY += ballVY;
-    ballVY -= gravity;
-
-    // Prevent the ball from moving outside the game container horizontally
-    if (ballX < 0) {
-      ballX = 0;
-    } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
-      ballX = gameContainer.clientWidth - ball.offsetWidth;
-    }
-
-    // Keep the ball at the bottom of the screen
-    if (ballY > gameContainer.clientHeight - ball.offsetHeight) {
-      ballY = gameContainer.clientHeight - ball.offsetHeight;
-      ballVY = 0;
-      isJumping = false;
-    }
-
-    ball.style.left = ballX + "px";
-    ball.style.bottom = ballY + "px";
-
-    handleCollisions();
-
-    requestAnimationFrame(() => updateBallPosition(mouseX));
-  }
-
-  function getRandomColor() {
-    return "#" + Math.floor(Math.random() * 16777215).toString(16);
-  }
-
-  function gameLoop() {
-    createPlatform();
-    setTimeout(gameLoop, 2000);
-  }
-
-  gameContainer.addEventListener("mousemove", function (event) {
-    mouseX = event.clientX;
-  });
-
-  ball.style.left = ballX + "px"; // Set the ball's initial horizontal position
-  ball.style.bottom = ballY + "px"; // Set the ball's initial vertical position
-
-  gameLoop();
-
-  // Call updateBallPosition after initializing ballY and ballVY
-  updateBallPosition(ballX);
-});
-
+    function updateBallPosition(mouseX) {
+        ballX = mouseX; // Update the ball's X position to follow the mouse
+    
+        ballY += ballVY;
+        ballVY -= gravity;
+    
+        // Prevent the ball from moving outside the game container horizontally
+        if (ballX < 0) {
+          ballX = 0;
+        } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
+          ballX = gameContainer.clientWidth - ball.offsetWidth;
+        }
+    
+        // Keep the ball at the bottom of the screen
+        if (ballY > gameContainer.clientHeight - ball.offsetHeight) {
+          ballY = gameContainer.clientHeight - ball.offsetHeight;
+          ballVY = 0;
+          isJumping = false;
+        }
+    
+        ball.style.left = ballX + "px";
+        ball.style.bottom = ballY + "px";
+    
+        handleCollisions();
+    
+        requestAnimationFrame(() => updateBallPosition(mouseX));
+      }
+    
+      function getRandomColor() {
+        return "#" + Math.floor(Math.random() * 16777215).toString(16);
+      }
+    
+      function gameLoop() {
+        createPlatform();
+        setTimeout(gameLoop, 2000);
+      }
+    
+      gameContainer.addEventListener("mousemove", function (event) {
+        mouseX = event.clientX;
+      });
+    
+      gameContainer.addEventListener("click", jump);
+    
+      ball.style.left = ballX + "px"; // Set the ball's initial horizontal position
+      ball.style.bottom = ballY + "px"; // Set the ball's initial vertical position
+    
+      gameLoop();
+      updateBallPosition(ballX); // Call updateBallPosition after initializing ballY and ballVY
+    });
