@@ -101,15 +101,19 @@ document.addEventListener("DOMContentLoaded", function () {
         ballY -= ballVY;
         ballVY -= gravity;
     
+        // Prevent the ball from moving outside the game container horizontally
         if (ballX < 0) {
           ballX = 0;
         } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
           ballX = gameContainer.clientWidth - ball.offsetWidth;
         }
     
+        // Prevent the ball from moving outside the game container vertically
         if (ballY < 0) {
           ballY = 0;
-          ballVY = 0;
+        } else if (ballY > gameContainer.clientHeight - ball.offsetHeight) {
+          ballY = gameContainer.clientHeight - ball.offsetHeight;
+          ballVY = 0; // Reset vertical velocity when the ball reaches the ground
           isJumping = false; // Reset isJumping flag when the ball reaches the ground
         }
     
