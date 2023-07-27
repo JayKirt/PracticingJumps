@@ -132,4 +132,4 @@ document.addEventListener("DOMContentLoaded", function () {
   
     updateBallPosition(ballX);
     gameLoop();
-  });
+  })
