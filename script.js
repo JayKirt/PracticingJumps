@@ -97,67 +97,69 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   
     function updateBallPosition() {
-      ballX += ballVX;
-      ballY -= ballVY;
-      ballVY -= gravity;
-  
-      if (ballX < 0) {
-        ballX = 0;
-      } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
-        ballX = gameContainer.clientWidth - ball.offsetWidth;
+        ballX += ballVX;
+        ballY -= ballVY;
+        ballVY -= gravity;
+    
+        if (ballX < 0) {
+          ballX = 0;
+        } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
+          ballX = gameContainer.clientWidth - ball.offsetWidth;
+        }
+    
+        if (ballY < 0) {
+          ballY = 0;
+          ballVY = 0;
+          isJumping = false; // Reset isJumping flag when the ball reaches the ground
+        }
+    
+        ball.style.left = ballX + "px";
+        ball.style.bottom = ballY + "px";
+    
+        handleCollisions();
+    
+        requestAnimationFrame(updateBallPosition);
       }
-  
-      if (ballY < 0) {
-        ballY = 0;
-        ballVY = 0;
+    
+      function getRandomColor() {
+        return "#" + Math.floor(Math.random() * 16777215).toString(16);
       }
-  
-      ball.style.left = ballX + "px";
+    
+      function gameLoop() {
+        createPlatform();
+        setTimeout(gameLoop, jumpInterval);
+      }
+    
+      gameContainer.addEventListener("click", jump);
+    
+      // Set initial ball position
+      ballY = 0;
       ball.style.bottom = ballY + "px";
-  
-      handleCollisions();
-  
-      requestAnimationFrame(updateBallPosition);
-    }
-  
-    function getRandomColor() {
-      return "#" + Math.floor(Math.random() * 16777215).toString(16);
-    }
-  
-    function gameLoop() {
-      createPlatform();
-      setTimeout(gameLoop, jumpInterval);
-    }
-  
-    gameContainer.addEventListener("click", jump);
-  
-    // Set initial ball position
-    ball.style.bottom = "0px";
-    ball.style.left = ballX + "px"; // Use ballX for initial horizontal position
-  
-    gameContainer.addEventListener("mousemove", function (e) {
-      const rect = gameContainer.getBoundingClientRect();
-      ballX = e.clientX - rect.left - ball.offsetWidth / 2;
+      ball.style.left = ballX + "px"; // Use ballX for initial horizontal position
+    
+      gameContainer.addEventListener("mousemove", function (e) {
+        const rect = gameContainer.getBoundingClientRect();
+        ballX = e.clientX - rect.left - ball.offsetWidth / 2;
+      });
+    
+      // Event listener for left/right arrow keys
+      document.addEventListener("keydown", function (e) {
+        if (isJumping) return;
+        if (e.key === "ArrowLeft") {
+          ballVX = -ballSpeed;
+        } else if (e.key === "ArrowRight") {
+          ballVX = ballSpeed;
+        }
+      });
+    
+      // Event listener for releasing left/right arrow keys
+      document.addEventListener("keyup", function (e) {
+        if (isJumping) return;
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+          ballVX = 0;
+        }
+      });
+    
+      updateBallPosition();
+      gameLoop();
     });
-  
-    // Event listener for left/right arrow keys
-    document.addEventListener("keydown", function (e) {
-      if (isJumping) return;
-      if (e.key === "ArrowLeft") {
-        ballVX = -ballSpeed;
-      } else if (e.key === "ArrowRight") {
-        ballVX = ballSpeed;
-      }
-    });
-  
-    // Event listener for releasing left/right arrow keys
-    document.addEventListener("keyup", function (e) {
-      if (isJumping) return;
-      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-        ballVX = 0;
-      }
-    });
-  
-    updateBallPosition();
-    gameLoop();
-  });
