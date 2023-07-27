@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   
     function updateBallPosition(mouseX) {
-      ballX += (mouseX - ballX) * 0.1;
+      ballX = mouseX; // Update the ball's X position to follow the mouse
   
       ballY += ballVY;
       ballVY -= gravity;
@@ -109,6 +109,13 @@ document.addEventListener("DOMContentLoaded", function () {
         ballX = 0;
       } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
         ballX = gameContainer.clientWidth - ball.offsetWidth;
+      }
+  
+      // Prevent the ball from going below the bottom of the screen
+      if (ballY > gameContainer.clientHeight - ball.offsetHeight) {
+        ballY = gameContainer.clientHeight - ball.offsetHeight;
+        ballVY = 0;
+        isJumping = false;
       }
   
       ball.style.left = ballX + "px";
