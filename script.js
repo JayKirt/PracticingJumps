@@ -10,6 +10,15 @@ document.addEventListener("DOMContentLoaded", function () {
   
     let isJumping = false;
   
+    // Ball position and velocity variables for left/right movement
+    let ballX = gameContainer.clientWidth / 2;
+    let ballVX = 0;
+    const ballSpeed = 5;
+  
+    // Ball position variables for mouse jump
+    let ballY = gameContainer.clientHeight;
+    let ballVY = 0;
+  
     function createPlatform() {
       const platform = document.createElement("div");
       platform.className = "platform";
@@ -20,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const maxX = gameContainer.clientWidth - platformWidth;
       const randomX = Math.floor(Math.random() * maxX);
       platform.style.left = randomX + "px";
-      platform.style.top = gameContainer.clientHeight + "px";
+      platform.style.top = gameContainer.clientHeight - platformHeight + "px"; // Set initial platform position
   
       gameContainer.appendChild(platform);
       movePlatform(platform);
@@ -48,31 +57,85 @@ document.addEventListener("DOMContentLoaded", function () {
       let currentY = initialY;
       const jumpStartTime = performance.now();
   
-      function updateJumpPosition(timestamp) {
-        const elapsedTime = timestamp - jumpStartTime;
-        if (elapsedTime < jumpDuration) {
-          const jumpProgress = (elapsedTime / jumpDuration) * Math.PI;
-          currentY = initialY + jumpHeight * Math.sin(jumpProgress);
-          ball.style.bottom = currentY + "px";
-          requestAnimationFrame(updateJumpPosition);
-        } else {
-          ball.style.bottom = initialY + "px";
-          isJumping = false;
+      function handleMouseJump(e) {
+        if (isJumping) return;
+        isJumping = true;
+    
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+    
+        const deltaX = mouseX - ballX;
+        const deltaY = ballY - mouseY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+        ballVX = (deltaX / distance) * ballSpeed;
+        ballVY = (deltaY / distance) * ballSpeed;
+    
+        const jumpStartTime = performance.now();
+    
+        function updateJumpPosition(timestamp) {
+          const elapsedTime = timestamp - jumpStartTime;
+          if (elapsedTime < jumpDuration) {
+            ballX += ballVX;
+            ballY -= ballVY;
+            ball.style.left = ballX + "px";
+            ball.style.bottom = ballY + "px";
+            requestAnimationFrame(updateJumpPosition);
+          } else {
+            ball.style.bottom = "0px";
+            isJumping = false;
+          }
         }
+    
+        requestAnimationFrame(updateJumpPosition);
       }
-  
-      requestAnimationFrame(updateJumpPosition);
-    }
-  
-    function getRandomColor() {
-      return '#' + Math.floor(Math.random()*16777215).toString(16);
-    }
-  
-    function gameLoop() {
-      createPlatform();
-      setTimeout(gameLoop, jumpInterval);
-    }
-  
-    gameContainer.addEventListener("click", jump);
-    gameLoop();
-  });
+    
+      function getRandomColor() {
+        return "#" + Math.floor(Math.random() * 16777215).toString(16);
+      }
+    
+      function gameLoop() {
+        createPlatform();
+        setTimeout(gameLoop, jumpInterval);
+      }
+    
+      gameContainer.addEventListener("click", jump);
+    
+      // Set initial ball position
+      ball.style.bottom = "0px";
+      ball.style.left = ballX + "px"; // Use ballX for initial horizontal position
+    
+      gameContainer.addEventListener("mousemove", handleMouseJump);
+    
+      // Event listener for left/right arrow keys
+      document.addEventListener("keydown", function (e) {
+        if (isJumping) return;
+        if (e.key === "ArrowLeft") {
+          ballVX = -ballSpeed;
+        } else if (e.key === "ArrowRight") {
+          ballVX = ballSpeed;
+        }
+      });
+    
+      // Event listener for releasing left/right arrow keys
+      document.addEventListener("keyup", function (e) {
+        if (isJumping) return;
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+          ballVX = 0;
+        }
+      });
+    
+      function updateBallPosition() {
+        ballX += ballVX;
+        if (ballX < 0) {
+          ballX = 0;
+        } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
+          ballX = gameContainer.clientWidth - ball.offsetWidth;
+        }
+        ball.style.left = ballX + "px";
+        requestAnimationFrame(updateBallPosition);
+      }
+    
+      updateBallPosition();
+      gameLoop();
+    });
