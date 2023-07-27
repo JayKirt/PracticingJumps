@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
     let isJumping = false;
     let ballX = gameContainer.clientWidth / 2;
-    let ballY = gameContainer.clientHeight - ball.offsetHeight;
+    let ballY = gameContainer.clientHeight - ball.offsetHeight; // Set the ball at the bottom
     let ballVY = 0;
     let mouseX = ballX;
   
@@ -132,4 +132,5 @@ document.addEventListener("DOMContentLoaded", function () {
   
     updateBallPosition(ballX);
     gameLoop();
-  })
+  });
+  
