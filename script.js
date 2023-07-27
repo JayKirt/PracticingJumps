@@ -2,32 +2,48 @@ document.addEventListener("DOMContentLoaded", function () {
     const gameContainer = document.getElementById("game-container");
     const ball = document.getElementById("ball");
   
-    const platformWidth = 100;
-    const platformHeight = 15;
     const jumpHeight = 100;
     const jumpDuration = 800;
-    const jumpInterval = 2000;
+    const platformInterval = 2000;
     const ballSpeed = 5;
+    const gravity = 0.5;
   
     let isJumping = false;
     let ballX = gameContainer.clientWidth / 2;
     let ballY = gameContainer.clientHeight - ball.offsetHeight;
     let ballVY = 0;
-    const gravity = 0.5;
+    const platforms = [];
   
     function createPlatform() {
       const platform = document.createElement("div");
       platform.className = "platform";
-      platform.style.width = platformWidth + "px";
-      platform.style.height = platformHeight + "px";
-      platform.style.backgroundColor = getRandomColor();
   
+      const platformWidth = 100;
+      const platformHeight = 15;
       const maxX = gameContainer.clientWidth - platformWidth;
       const randomX = Math.floor(Math.random() * maxX);
+      platform.style.width = platformWidth + "px";
+      platform.style.height = platformHeight + "px";
       platform.style.left = randomX + "px";
-      platform.style.top = gameContainer.clientHeight - platformHeight + "px";
+      platform.style.top = gameContainer.clientHeight + "px";
   
       gameContainer.appendChild(platform);
+      platforms.push(platform);
+    }
+  
+    function movePlatforms() {
+      platforms.forEach((platform) => {
+        let posY = parseInt(platform.style.top);
+        posY -= 5;
+        platform.style.top = posY + "px";
+        if (posY < -platform.offsetHeight) {
+          platform.remove();
+          const index = platforms.indexOf(platform);
+          if (index > -1) {
+            platforms.splice(index, 1);
+          }
+        }
+      });
     }
   
     function jump() {
@@ -56,10 +72,8 @@ document.addEventListener("DOMContentLoaded", function () {
   
     function handleCollisions() {
       const ballRect = ball.getBoundingClientRect();
-      const platforms = document.getElementsByClassName("platform");
   
-      for (let i = 0; i < platforms.length; i++) {
-        const platform = platforms[i];
+      platforms.forEach((platform) => {
         const platformRect = platform.getBoundingClientRect();
   
         if (
@@ -73,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
           ballY = platformRect.top - ball.offsetHeight;
           isJumping = false;
         }
-      }
+      });
     }
   
     function updateBallPosition(mouseX) {
@@ -82,15 +96,11 @@ document.addEventListener("DOMContentLoaded", function () {
       ballY += ballVY;
       ballVY -= gravity;
   
-      // Prevent the ball from moving outside the game container vertically
-      if (ballY < 0) {
-        ballY = 0;
-        ballVY = 0; // Reset vertical velocity when the ball reaches the top
-        isJumping = false;
-      } else if (ballY > gameContainer.clientHeight - ball.offsetHeight) {
-        ballY = gameContainer.clientHeight - ball.offsetHeight;
-        ballVY = 0; // Reset vertical velocity when the ball reaches the bottom
-        isJumping = false;
+      // Prevent the ball from moving outside the game container horizontally
+      if (ballX < 0) {
+        ballX = 0;
+      } else if (ballX > gameContainer.clientWidth - ball.offsetWidth) {
+        ballX = gameContainer.clientWidth - ball.offsetWidth;
       }
   
       ball.style.left = ballX + "px";
@@ -107,11 +117,12 @@ document.addEventListener("DOMContentLoaded", function () {
   
     function gameLoop() {
       createPlatform();
-      setTimeout(gameLoop, jumpInterval);
+      movePlatforms();
+      setTimeout(gameLoop, platformInterval);
     }
   
     gameContainer.addEventListener("mousemove", function (event) {
-      updateBallPosition(event.clientX);
+      mouseX = event.clientX;
     });
   
     gameContainer.addEventListener("click", jump);
