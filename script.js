@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const mouseY = e.clientY;
     
         const deltaX = mouseX - ballX;
-        const deltaY = ballY - mouseY;
+        const deltaY = gameContainer.clientHeight - mouseY; // Invert Y-coordinate for proper jumping
         const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     
         ballVX = (deltaX / distance) * ballSpeed;
