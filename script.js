@@ -137,8 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(gameLoop, jumpInterval);
     }
   
-    gameContainer.addEventListener("click", jump);
-  
     // Set initial ball position to the bottom of the screen
     ball.style.bottom = "0px";
     ball.style.left = ballX + "px"; // Use ballX for initial horizontal position
