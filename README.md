@@ -3,4 +3,5 @@
 <h4> <ins> To Do: </ins></h4>
 <ul>
   <li> Get ball to spawn at bottom of screen</li>
+   <li> Get ball to be able to colide with platforms </li>
 </ul>
