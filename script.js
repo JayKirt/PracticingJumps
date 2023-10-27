@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let isJumping = false;
     let isOnPlatform = true; // Start the ball on a platform
     let ballX = gameContainer.clientWidth / 2;
-    let ballY = gameContainer.clientHeight - ball.offsetHeight; // Set the ball at the bottom
+    let ballY = gameContainer.clientHeight - ball.offsetHeight; 
     let ballVY = 0; // Set the initial vertical velocity to 0
     let mouseX = ballX;
   
@@ -85,15 +85,15 @@ document.addEventListener("DOMContentLoaded", function () {
           ballRect.right > platformRect.left &&
           ballRect.bottom >= platformRect.top &&
           ballRect.bottom <= platformRect.bottom &&
-          ballVY <= 0 // Only trigger collision when ball is moving upwards (jumping)
+          ballVY <= 0 
         ) {
           ballVY = 0;
           ballY = platformRect.top - ball.offsetHeight;
           isJumping = false;
-          isOnPlatform = true; // Ball is on a platform
+          isOnPlatform = true; 
           break;
         } else {
-          isOnPlatform = false; // Ball is not on any platform
+          isOnPlatform = false; 
         }
       }
     }
